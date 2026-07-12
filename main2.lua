@@ -50,7 +50,8 @@ end
 local year = tonumber(arg[1])
 local month = tonumber(arg[2])
 local day = tonumber(arg[3])
-local phase, age, illumination = getMoonPhase(year, month, day)
+local date = { year = year, month = month, day = day }
+local phase, age, illumination = getMoonPhase(date.year, date.month, date.day)
 
 print(string.format("Date: %04d-%02d-%02d", year, month, day))
 print("Phase: " .. phase)
