@@ -47,8 +47,9 @@ local function getMoonPhase(year, month, day)
     return phase, math.floor(age * 100) / 100, math.floor(illumination)
 end
 
--- Example Usage:
-local year, month, day = 2026, 7, 11
+local year = tonumber(arg[1])
+local month = tonumber(arg[2])
+local day = tonumber(arg[3])
 local phase, age, illumination = getMoonPhase(year, month, day)
 
 print(string.format("Date: %04d-%02d-%02d", year, month, day))

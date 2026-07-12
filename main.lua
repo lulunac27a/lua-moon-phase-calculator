@@ -46,8 +46,10 @@ local function getMoonPhase(year, month, day)
     }
 end
 
--- Example usage:
-local date = os.date("*t")
+local year = tonumber(arg[1])
+local month = tonumber(arg[2])
+local day = tonumber(arg[3])
+local date = { year = year, month = month, day = day }
 local currentPhase = getMoonPhase(date.year, date.month, date.day)
 
 print("Current Phase: " .. currentPhase.name)
