@@ -51,6 +51,13 @@ local year = tonumber(arg[1])
 local month = tonumber(arg[2])
 local day = tonumber(arg[3])
 local date = { year = year, month = month, day = day }
+if not year or not month or not day then
+    print("No valid date provided. Defaulting to today's date.")
+    local current_date = os.date("*t")
+    year = tonumber(current_date.year)
+    month = tonumber(current_date.month)
+    day = tonumber(current_date.day)
+end
 local phase, age, illumination = getMoonPhase(date.year, date.month, date.day)
 
 print(string.format("Date: %04d-%02d-%02d", year, month, day))
