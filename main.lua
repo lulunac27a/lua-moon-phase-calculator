@@ -1,11 +1,11 @@
-local function getMoonPhase(year, month, day)
+local function getMoonPhase(year, month, day) --function to calculate the moon phase based on the provided date
     -- Known New Moon reference point: January 6, 2000
     local refYear = 2000
     local refMonth = 1
     local refDay = 6
 
     -- Synodic month (days it takes to complete a full lunar cycle)
-    local synodicMonth = 29.5305882
+    local synodicMonth = 29.5305882 --in days
 
     -- Convert Gregorian date to Julian Day (approximate)
     if month < 3 then
@@ -19,10 +19,10 @@ local function getMoonPhase(year, month, day)
     local julianDays = c + e + day - 694039.09
 
     -- Calculate days elapsed since the reference new moon
-    local daysElapsed = julianDays % synodicMonth
+    local daysElapsed = julianDays % synodicMonth --days since the last new moon
 
     -- Percentage of the lunar cycle completed (0.0 to 1.0)
-    local percent = daysElapsed / synodicMonth
+    local percent = daysElapsed / synodicMonth --percentage of the lunar cycle completed
 
     -- Map the cycle to an 8-phase index (0-7)
     local phaseIndex = math.floor((daysElapsed / synodicMonth) * 8 + 0.5) % 8
@@ -45,7 +45,7 @@ local function getMoonPhase(year, month, day)
         age = daysElapsed
     }
 end
-local function promptNumber(message, default, min, max)
+local function promptNumber(message, default, min, max) --prompt user for a number with default and range validation
     while true do
         io.write(string.format("%s [%d]: ", message, default))
         local input = io.read()
@@ -63,7 +63,7 @@ end
 local year = tonumber(arg[1])
 local month = tonumber(arg[2])
 local day = tonumber(arg[3])
-if not year or not month or not day then
+if not year or not month or not day then --if any of the date components are missing, prompt the user for input
     print("--- Moon Phase Calculator ---")
     print("Press Enter to accept the current date defaults.\n")
 
@@ -83,14 +83,15 @@ if not year or not month or not day then
     day = promptNumber("Enter Day", today.day, 1, max_days)
 end
 local date = { year = year, month = month, day = day }
-if not year or not month or not day then
+if not year or not month or not day then --if no valid date is provided, default to today's date
     print("No valid date provided. Defaulting to today's date.")
     local current_date = os.date("*t")
     year = tonumber(current_date.year)
     month = tonumber(current_date.month)
     day = tonumber(current_date.day)
+    date = { year = year, month = month, day = day }
 end
-local currentPhase = getMoonPhase(date.year, date.month, date.day)
+local currentPhase = getMoonPhase(date.year, date.month, date.day) --get the moon phase for the provided date
 
 print("Current Phase: " .. currentPhase.name)
 print("Cycle Progress: " .. string.format("%.2f%%", currentPhase.percent * 100))
