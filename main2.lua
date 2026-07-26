@@ -1,5 +1,5 @@
 -- Moon phase calculation in Lua
-local function getMoonPhase(year, month, day)                                           --function to calculate the moon phase for a given date
+local function getMoonPhase(year, month, day)                                         --function to calculate the moon phase for a given date
     -- 1. Base known New Moon: January 6, 2000
     local base_time = os.time({ year = 2000, month = 1, day = 6, hour = 18, min = 14 }) --base new moon date after new year 2000
 
@@ -9,18 +9,17 @@ local function getMoonPhase(year, month, day)                                   
     -- 3. Calculate seconds passed and convert to days
     local seconds_per_day = 86400
     local diff_days = (target_time - base_time) /
-        seconds_per_day --difference in days between target date and base new moon date
+    seconds_per_day                                               --difference in days between target date and base new moon date
 
     -- 4. Synodic month length (average lunar cycle in days)
     local lunar_cycle = 29.530588853 --average length of a lunar cycle in days
 
     -- 5. Calculate current age of the moon in days (0 to 29.53)
-    local age = diff_days %
-    lunar_cycle                                 --age of the moon in days, modulo the lunar cycle to get the current phase
+    local age = diff_days % lunar_cycle         --age of the moon in days, modulo the lunar cycle to get the current phase
     if age < 0 then age = age + lunar_cycle end --avoid negative age by adding the lunar cycle length if age is negative
 
     -- 6. Determine Phase Name
-    local phase = ""
+    local phase = "" --moon phase names corresponding to the 8-phase indexes
     if age < 1.84566 then
         phase = "New Moon"
     elseif age < 5.53699 then
@@ -43,9 +42,9 @@ local function getMoonPhase(year, month, day)                                   
 
     -- 7. Calculate Illumination Percentage (0% to 100%)
     -- Uses a simple cosine approximation based on the cycle position
-    local angle = (age / lunar_cycle) * 2 * math.pi --moon angle
+    local angle = (age / lunar_cycle) * 2 * math.pi      --moon angle
     local illumination = (1 - math.cos(angle)) / 2 *
-        100                                         --illumination percentage based on the cosine of the angle in the lunar cycle
+    100                                                  --illumination percentage based on the cosine of the angle in the lunar cycle
 
     return phase, math.floor(age * 100) / 100, math.floor(illumination)
 end
@@ -53,20 +52,20 @@ end
 local function promptNumber(message, default, min, max) --prompt user for a number with default and range validation
     while true do
         io.write(string.format("%s [%d]: ", message, default))
-        local input = io.read()
+        local input = io.read() --read user input
 
         -- Use default if user just hits Enter
         if input == "" then return default end
 
-        local num = tonumber(input)
-        if num and num >= min and num <= max then
+        local num = tonumber(input)               --convert input to number
+        if num and num >= min and num <= max then --clamp the number to the specified range (min to max)
             return num
         end
         print(string.format("Invalid entry. Please enter a number between %d and %d.", min, max))
     end
 end
 
-local year = tonumber(arg[1])
+local year = tonumber(arg[1]) --parse command line arguments for year, month, and day
 local month = tonumber(arg[2])
 local day = tonumber(arg[3])
 if not year or not month or not day then --if any of the date components are missing, prompt the user for input

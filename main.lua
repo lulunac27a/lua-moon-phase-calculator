@@ -1,6 +1,6 @@
 local function getMoonPhase(year, month, day) --function to calculate the moon phase based on the provided date
     -- Known New Moon reference point: January 6, 2000
-    local refYear = 2000
+    local refYear = 2000                      --new moon after new year 2000
     local refMonth = 1
     local refDay = 6
 
@@ -14,9 +14,9 @@ local function getMoonPhase(year, month, day) --function to calculate the moon p
     end
     month = month + 1
 
-    local c = 365.25 * year
-    local e = math.floor(30.6 * month)
-    local julianDays = c + e + day - 694039.09
+    local c = 365.25 * year                    --year in days
+    local e = math.floor(30.6 * month)         --month in days
+    local julianDays = c + e + day - 694039.09 --Julian days
 
     -- Calculate days elapsed since the reference new moon
     local daysElapsed = julianDays % synodicMonth --days since the last new moon
@@ -27,7 +27,7 @@ local function getMoonPhase(year, month, day) --function to calculate the moon p
     -- Map the cycle to an 8-phase index (0-7)
     local phaseIndex = math.floor((daysElapsed / synodicMonth) * 8 + 0.5) % 8
 
-    local phaseNames = {
+    local phaseNames = { --moon phase names corresponding to the 8-phase indexes
         "New Moon",
         "Waxing Crescent",
         "First Quarter",
@@ -48,19 +48,19 @@ end
 local function promptNumber(message, default, min, max) --prompt user for a number with default and range validation
     while true do
         io.write(string.format("%s [%d]: ", message, default))
-        local input = io.read()
+        local input = io.read() --read user input
 
         -- Use default if user just hits Enter
         if input == "" then return default end
 
-        local num = tonumber(input)
-        if num and num >= min and num <= max then
+        local num = tonumber(input)               --convert input to number
+        if num and num >= min and num <= max then --clamp the number to the specified range (min to max)
             return num
         end
         print(string.format("Invalid entry. Please enter a number between %d and %d.", min, max))
     end
 end
-local year = tonumber(arg[1])
+local year = tonumber(arg[1]) --parse command line arguments for year, month, and day
 local month = tonumber(arg[2])
 local day = tonumber(arg[3])
 if not year or not month or not day then --if any of the date components are missing, prompt the user for input
@@ -94,5 +94,5 @@ end
 local currentPhase = getMoonPhase(date.year, date.month, date.day) --get the moon phase for the provided date
 
 print("Current Phase: " .. currentPhase.name)
-print("Cycle Progress: " .. string.format("%.2f%%", currentPhase.percent * 100))
+print("Cycle Progress: " .. string.format("%.2f%%", currentPhase.percent * 100) .. "%")
 print("Moon Age: " .. string.format("%.2f", currentPhase.age) .. " days")
