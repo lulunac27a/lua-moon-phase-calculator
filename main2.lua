@@ -1,103 +1,68 @@
--- Moon phase calculation in Lua
-local function getMoonPhase(year, month, day)                                         --function to calculate the moon phase for a given date
-    -- 1. Base known New Moon: January 6, 2000
-    local base_time = os.time({ year = 2000, month = 1, day = 6, hour = 18, min = 14 }) --base new moon date after new year 2000
+-- CLI wrapper using moon.lua
+package.path = package.path .. ";./?.lua"
+local moon = require("moon")
 
-    -- 2. Target date timestamp
-    local target_time = os.time({ year = year, month = month, day = day }) --target date
+local function usage()
+    print("Usage: lua main2.lua [--date YYYY-MM-DD] [--json] [--verbose]")
+    print("Examples:")
+    print("  lua main2.lua --date 2026-07-27")
+    print("  lua main2.lua 2026 7 27 --json")
+end
 
-    -- 3. Calculate seconds passed and convert to days
-    local seconds_per_day = 86400
-    local diff_days = (target_time - base_time) /
-    seconds_per_day                                               --difference in days between target date and base new moon date
+local args = {}
+for i = 1, #arg do args[i] = arg[i] end
 
-    -- 4. Synodic month length (average lunar cycle in days)
-    local lunar_cycle = 29.530588853 --average length of a lunar cycle in days
+local opts = { json = false, verbose = false }
+local year, month, day
 
-    -- 5. Calculate current age of the moon in days (0 to 29.53)
-    local age = diff_days % lunar_cycle         --age of the moon in days, modulo the lunar cycle to get the current phase
-    if age < 0 then age = age + lunar_cycle end --avoid negative age by adding the lunar cycle length if age is negative
-
-    -- 6. Determine Phase Name
-    local phase = "" --moon phase names corresponding to the 8-phase indexes
-    if age < 1.84566 then
-        phase = "New Moon"
-    elseif age < 5.53699 then
-        phase = "Waxing Crescent"
-    elseif age < 9.22831 then
-        phase = "First Quarter"
-    elseif age < 12.91964 then
-        phase = "Waxing Gibbous"
-    elseif age < 16.61096 then
-        phase = "Full Moon"
-    elseif age < 20.30229 then
-        phase = "Waning Gibbous"
-    elseif age < 23.99361 then
-        phase = "Third Quarter"
-    elseif age < 27.68494 then
-        phase = "Waning Crescent"
+local i = 1
+while i <= #args do
+    local a = args[i]
+    if a == "--help" or a == "-h" then usage(); os.exit(0)
+    elseif a == "--json" then opts.json = true
+    elseif a == "--verbose" then opts.verbose = true
+    elseif a == "--date" then
+        local v = args[i+1]
+        if not v then print("--date requires YYYY-MM-DD"); os.exit(1) end
+        local y,m,d = v:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
+        if not y then print("Invalid date format"); os.exit(1) end
+        year = tonumber(y); month = tonumber(m); day = tonumber(d)
+        i = i + 1
     else
-        phase = "New Moon"
-    end
-
-    -- 7. Calculate Illumination Percentage (0% to 100%)
-    -- Uses a simple cosine approximation based on the cycle position
-    local angle = (age / lunar_cycle) * 2 * math.pi      --moon angle
-    local illumination = (1 - math.cos(angle)) / 2 *
-    100                                                  --illumination percentage based on the cosine of the angle in the lunar cycle
-
-    return phase, math.floor(age * 100) / 100, math.floor(illumination)
-end
-
-local function promptNumber(message, default, min, max) --prompt user for a number with default and range validation
-    while true do
-        io.write(string.format("%s [%d]: ", message, default))
-        local input = io.read() --read user input
-
-        -- Use default if user just hits Enter
-        if input == "" then return default end
-
-        local num = tonumber(input)               --convert input to number
-        if num and num >= min and num <= max then --clamp the number to the specified range (min to max)
-            return num
+        -- positional date: YYYY MM DD
+        if not year and tonumber(a) and #args >= i+2 then
+            year = tonumber(a)
+            month = tonumber(args[i+1])
+            day = tonumber(args[i+2])
+            i = i + 2
+        elseif a:match("^%d%d%d%d%-%d%d%-%d%d$") and not year then
+            local y,m,d = a:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
+            year = tonumber(y); month = tonumber(m); day = tonumber(d)
         end
-        print(string.format("Invalid entry. Please enter a number between %d and %d.", min, max))
     end
+    i = i + 1
 end
 
-local year = tonumber(arg[1]) --parse command line arguments for year, month, and day
-local month = tonumber(arg[2])
-local day = tonumber(arg[3])
-if not year or not month or not day then --if any of the date components are missing, prompt the user for input
-    print("--- Moon Phase Calculator ---")
-    print("Press Enter to accept the current date defaults.\n")
-
-    local today    = os.date("*t")
-    year           = promptNumber("Enter Year", today.year, 1970, 2100)
-    month          = promptNumber("Enter Month", today.month, 1, 12)
-
-    -- Basic max day validation based on month
-    local max_days = 31
-    if month == 4 or month == 6 or month == 9 or month == 11 then
-        max_days = 30
-    elseif month == 2 then
-        -- Leap year check
-        if (year % 4 == 0 and year % 100 ~= 0) or (year % 400 == 0) then max_days = 29 else max_days = 28 end
-    end
-
-    day = promptNumber("Enter Day", today.day, 1, max_days)
+if not year or not month or not day then
+    local today = os.date("*t")
+    year = year or today.year
+    month = month or today.month
+    day = day or today.day
+    if opts.verbose then print(string.format("Using date: %04d-%02d-%02d", year, month, day)) end
 end
-local date = { year = year, month = month, day = day }
-if not year or not month or not day then --check if the date is still invalid after prompting
-    print("No valid date provided. Defaulting to today's date.")
-    local current_date = os.date("*t")
-    year = tonumber(current_date.year)
-    month = tonumber(current_date.month)
-    day = tonumber(current_date.day)
-end
-local phase, age, illumination = getMoonPhase(date.year, date.month, date.day) --get the moon phase, age, and illumination for the provided date
 
-print(string.format("Date: %04d-%02d-%02d", year, month, day))
-print("Phase: " .. phase)
-print("Age (Days): " .. age)
-print("Illumination: " .. illumination .. "%")
+local result = moon.getMoonPhase(year, month, day)
+
+local function to_json(t)
+    return string.format('{"date":"%04d-%02d-%02d","phase":"%s","age":%.2f,"illumination":%d,"percent":%.4f}',
+        year, month, day, result.name, result.age, result.illumination, result.percent)
+end
+
+if opts.json then
+    print(to_json(result))
+else
+    -- Match main.lua output
+    print("Current Phase: " .. result.name)
+    print("Cycle Progress: " .. string.format("%.2f%%", result.percent * 100))
+    print("Moon Age: " .. string.format("%.2f", result.age) .. " days")
+end
