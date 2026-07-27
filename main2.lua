@@ -18,25 +18,32 @@ local year, month, day
 local i = 1
 while i <= #args do
     local a = args[i]
-    if a == "--help" or a == "-h" then usage(); os.exit(0)
-    elseif a == "--json" then opts.json = true
-    elseif a == "--verbose" then opts.verbose = true
+    if a == "--help" or a == "-h" then
+        usage(); os.exit(0)
+    elseif a == "--json" then
+        opts.json = true
+    elseif a == "--verbose" then
+        opts.verbose = true
     elseif a == "--date" then
-        local v = args[i+1]
-        if not v then print("--date requires YYYY-MM-DD"); os.exit(1) end
-        local y,m,d = v:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
-        if not y then print("Invalid date format"); os.exit(1) end
+        local v = args[i + 1]
+        if not v then
+            print("--date requires YYYY-MM-DD"); os.exit(1)
+        end
+        local y, m, d = v:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
+        if not y then
+            print("Invalid date format"); os.exit(1)
+        end
         year = tonumber(y); month = tonumber(m); day = tonumber(d)
         i = i + 1
     else
         -- positional date: YYYY MM DD
-        if not year and tonumber(a) and #args >= i+2 then
+        if not year and tonumber(a) and #args >= i + 2 then
             year = tonumber(a)
-            month = tonumber(args[i+1])
-            day = tonumber(args[i+2])
+            month = tonumber(args[i + 1])
+            day = tonumber(args[i + 2])
             i = i + 2
         elseif a:match("^%d%d%d%d%-%d%d%-%d%d$") and not year then
-            local y,m,d = a:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
+            local y, m, d = a:match("(%d%d%d%d)%-(%d%d)%-(%d%d)")
             year = tonumber(y); month = tonumber(m); day = tonumber(d)
         end
     end

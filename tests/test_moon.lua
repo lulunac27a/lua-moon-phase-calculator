@@ -1,12 +1,12 @@
 package.path = package.path .. ";../?.lua;./?.lua"
 local moon = require("moon")
 
-local function assert_equal(a,b,msg)
+local function assert_equal(a, b, msg)
     if a ~= b then error(string.format("Assertion failed: %s (got %s, expected %s)", msg, tostring(a), tostring(b))) end
 end
 
 -- Test: reference new moon date should be New Moon
-local r = moon.getMoonPhase(2000,1,6)
+local r = moon.getMoonPhase(2000, 1, 6)
 assert_equal(r.name, "New Moon", "2000-01-06 should be New Moon")
 
 -- Test: today's call returns a table with required fields
