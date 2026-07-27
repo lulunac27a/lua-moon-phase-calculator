@@ -57,7 +57,7 @@ local function promptNumber(message, default, min, max) --prompt user for a numb
         if num and num >= min and num <= max then --clamp the number to the specified range (min to max)
             return num
         end
-        print(string.format("Invalid entry. Please enter a number between %d and %d.", min, max))
+        print(string.format("Invalid entry. Please enter a number between %d and %d.", min, max)) --prompt user again if input is invalid
     end
 end
 local year = tonumber(arg[1]) --parse command line arguments for year, month, and day
@@ -68,7 +68,7 @@ if not year or not month or not day then --if any of the date components are mis
     print("Press Enter to accept the current date defaults.\n")
 
     local today    = os.date("*t")
-    year           = promptNumber("Enter Year", today.year, 1970, 2100)
+    year           = promptNumber("Enter Year", today.year, 1970, 2100) --prompt date input with current date as default
     month          = promptNumber("Enter Month", today.month, 1, 12)
 
     -- Basic max day validation based on month
@@ -91,8 +91,8 @@ if not year or not month or not day then --if no valid date is provided, default
     day = tonumber(current_date.day)
     date = { year = year, month = month, day = day }
 end
-local currentPhase = getMoonPhase(date.year, date.month, date.day) --get the moon phase for the provided date
+local currentPhase = getMoonPhase(date.year, date.month, date.day)                      --get the moon phase for the provided date
 
-print("Current Phase: " .. currentPhase.name)
-print("Cycle Progress: " .. string.format("%.2f%%", currentPhase.percent * 100) .. "%")
-print("Moon Age: " .. string.format("%.2f", currentPhase.age) .. " days")
+print("Current Phase: " .. currentPhase.name)                                           --current moon phase name
+print("Cycle Progress: " .. string.format("%.2f%%", currentPhase.percent * 100) .. "%") --current moon cycle progress as a percentage
+print("Moon Age: " .. string.format("%.2f", currentPhase.age) .. " days")               --current moon age in days
