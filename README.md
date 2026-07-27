@@ -1,6 +1,7 @@
 # Lua Moon Phase Calculator
 
-This script calculates the current moon phase based on the Gregorian date. It uses Lua's built-in date and time functions.
+This script calculates the current moon phase based on the Gregorian date. It
+uses Lua's built-in date and time functions.
 
 ### Getting Started
 
