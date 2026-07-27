@@ -2,7 +2,13 @@
 package.path = package.path .. ";./?.lua"
 local moon = require("moon")
 
-local function usage()
+local function usage() --usage instructions for the command line interface
+    print("Moon Phase Calculator CLI")
+    print("Options:")
+    print("  --date YYYY-MM-DD   Specify the date for moon phase calculation")
+    print("  --json              Output result in JSON format")
+    print("  --verbose           Show additional information")
+    print("  --help, -h          Show this help message")
     print("Usage: lua main2.lua [--date YYYY-MM-DD] [--json] [--verbose]")
     print("Examples:")
     print("  lua main2.lua --date 2026-07-27")
