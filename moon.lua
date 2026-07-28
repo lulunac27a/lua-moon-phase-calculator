@@ -6,9 +6,9 @@ local function normalize_age(age, cycle)  --normalize the age to be within the r
     return age
 end
 
-function M.getMoonPhase(year, month, day) --calculate the moon phase for a given date
+function M.getMoonPhase(year, month, day)                                              --calculate the moon phase for a given date
     -- Validate input
-    if type(year) ~= "number" or type(month) ~= "number" or type(day) ~= "number" then
+    if type(year) ~= "number" or type(month) ~= "number" or type(day) ~= "number" then --check if the input values are numbers
         error("Year, month, and day must be numbers")
     end
     local lunar_cycle = 29.530588853 --average length of a lunar cycle in days
