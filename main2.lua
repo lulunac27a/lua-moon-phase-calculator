@@ -1,8 +1,8 @@
 -- CLI wrapper using moon.lua
 package.path = package.path .. ";./?.lua"
-local moon = require("moon")
+local moon = require("moon") --moon file for moon phase calculations
 
-local function usage() --usage instructions for the command line interface
+local function usage()       --usage instructions for the command line interface
     print("Moon Phase Calculator CLI")
     print("Options:")
     print("  --date YYYY-MM-DD   Specify the date for moon phase calculation")
@@ -18,19 +18,19 @@ end
 local args = {}
 for i = 1, #arg do args[i] = arg[i] end
 
-local opts = { json = false, verbose = false }
-local year, month, day
+local opts = { json = false, verbose = false } --table to hold command line options
+local year, month, day                         --variables to hold the date for moon phase calculation
 
 local i = 1
 while i <= #args do
-    local a = args[i]
+    local a = args[i]                                      --command line arguments
     if a == "--help" or a == "-h" then
-        usage(); os.exit(0)
+        usage(); os.exit(0)                                --help option
     elseif a == "--json" then
-        opts.json = true
+        opts.json = true                                   --json output option
     elseif a == "--verbose" then
-        opts.verbose = true
-    elseif a == "--date" then
+        opts.verbose = true                                --verbose output option
+    elseif a == "--date" then                              --date option
         local v = args[i + 1]
         if not v then
             print("--date requires YYYY-MM-DD"); os.exit(1)
